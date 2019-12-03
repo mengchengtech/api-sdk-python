@@ -10,7 +10,7 @@ logging.basicConfig(filename='api-test.log', level='INFO', format=_log_format)
 _console = logging.StreamHandler(sys.stdout)
 _console.setLevel('INFO')
 _console.setFormatter(logging.Formatter(_log_format))
-logging.getLogger('').addHandler(_console)
+logging.getLogger('').addHandler(_console) 
 logger = logging.getLogger(__name__)
 
 baseUrl = 'https://api.mctech.vip'
