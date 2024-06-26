@@ -5,20 +5,22 @@ tested in python 3.5 / 3.6
 
 ## package dependency
 
-```
-pip install requests
+```bash
+pip3 install httpx
 ```
 
 ## code sample
-```
-import mc_api
+
+```python
+from kestrel_authentication import GatewayAuthentication
 
 baseUrl = 'https://api.mctech.vip'
 accessId = 'your accessId'
 secretKey = 'your secretKey'
 project_api_url = '/org-api/projects?start=0&limit=2'
 
-client = mc_api.open_api_client(baseUrl, accessId, secretKey)
+client = httpx.Client(auth=GatewayAuthentication(access_id, secret_key))
+client.base_url = base_url
 json = client.get(project_api_url).json()
 print(len(json))
 ```

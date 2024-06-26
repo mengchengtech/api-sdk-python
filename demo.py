@@ -3,7 +3,9 @@ import json
 import logging
 import sys
 import threading
-import mc_api
+import httpx
+
+from kestrel_authentication import GatewayAuthentication
 
 _log_format = '%(asctime)s | %(levelname)s | %(threadName)s | %(module)s | %(message)s'
 logging.basicConfig(filename='api-test.log', level='INFO', format=_log_format)
@@ -13,9 +15,9 @@ _console.setFormatter(logging.Formatter(_log_format))
 logging.getLogger('').addHandler(_console) 
 logger = logging.getLogger(__name__)
 
-baseUrl = 'https://api.mctech.vip'
-accessId = 'xxxx'
-secretKey = 'xxxx'
+base_url = 'http://dev.mctech.vip/api/'
+access_id = '3zE1wPSyJWZJe94vLhLo'
+secret_key = 'MaEx+H5AceWDkj6yfkVS9Ys/jY4vfmo9RaoAnvSi'
 project_api_url = '/org-api/projects?start=%d&limit=%d'
 pcr_api_url = '/external/project-construction-record?startId=%d&startVersion=%d&limit=%d&orgId=%d'
 max_thread_count = 10
@@ -23,7 +25,9 @@ running_thread_count = 0
 total_records = 0
 
 lock = threading.RLock()
-client = mc_api.open_api_client(baseUrl, accessId, secretKey)
+client = httpx.Client(auth=GatewayAuthentication(access_id, secret_key))
+client.base_url = base_url
+
 pcr_file = open('project-construction-record.txt', 'w', encoding = 'utf-8')
 
 
@@ -34,6 +38,9 @@ def get_projects():
     while True:
         url = project_api_url % (start_id, page_size)
         response = client.get(url)
+        if not response.is_success:
+            print(response.text)
+            exit(-1)
         arr = response.json()
         for proj in arr:
             project_id = proj['id']
